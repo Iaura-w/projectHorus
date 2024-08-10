@@ -21,48 +21,35 @@ public class Wall implements Structure {
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        List<Block> result = new ArrayList<>();
-        for (Block block : blocks) {
-            if (block.getMaterial().equalsIgnoreCase(material)) {
-                result.add(block);
-            }
-            if (block instanceof CompositeBlock compositeBlock) {
-                result.addAll(findBlocksByMaterialNested(compositeBlock.getBlocks(), material));
-            }
-        }
-        return result;
+        return findBlocksByMaterialNested(blocks, material);
     }
 
     private List<Block> findBlocksByMaterialNested(List<Block> blocks, String material) {
         List<Block> result = new ArrayList<>();
         for (Block block : blocks) {
-            if (block.getMaterial().equalsIgnoreCase(material)) {
+            if (block.getMaterial().equalsIgnoreCase(material))
                 result.add(block);
-            }
-            if (block instanceof CompositeBlock compositeBlock) {
+
+            if (block instanceof CompositeBlock compositeBlock)
                 result.addAll(findBlocksByMaterialNested(compositeBlock.getBlocks(), material));
-            }
+
         }
         return result;
     }
 
     @Override
     public int count() {
-        var count = 0;
-        for (Block block : blocks) {
-            count += countBlocks(block);
-        }
-        return count;
+        return countBlocksNested(blocks);
     }
 
-    private int countBlocks(Block block) {
+    private int countBlocksNested(List<Block> blocks) {
         var count = 0;
-        if (block instanceof CompositeBlock compositeBlock) {
-            for (Block b : compositeBlock.getBlocks()) {
-                count += countBlocks(b);
-            }
+        for (Block block : blocks) {
+            if (block instanceof CompositeBlock compositeBlock)
+                count += countBlocksNested(compositeBlock.getBlocks());
+
+            count++;
         }
-        count++;
         return count;
     }
 }
