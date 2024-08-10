@@ -56,7 +56,7 @@ class WallCountTest {
     }
 
     @Test
-    void should_return_4_when_count_wall_has_composite_block_with_blocks() {
+    void should_return_4_when_count_wall_has_composite_block_with_3_blocks() {
         // given
         List<Block> blocks = new ArrayList<>();
         blocks.add(compositeBlock2);
