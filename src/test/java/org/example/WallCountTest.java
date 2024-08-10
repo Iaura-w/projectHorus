@@ -84,4 +84,24 @@ class WallCountTest {
         int expected = 6;
         assertEquals(expected, actual);
     }
+
+    @Test
+    void should_return_14_when_count_wall_has_3_blocks_and_3_composite_blocks() {
+        // given
+        List<Block> blocks = new ArrayList<>();
+        blocks.add(block1);
+        blocks.add(block2);
+        blocks.add(block3);
+        blocks.add(compositeBlock1);
+        blocks.add(compositeBlock2);
+        blocks.add(compositeBlock3);
+        Wall wall = new Wall(blocks);
+
+        // when
+        int actual = wall.count();
+
+        // then
+        int expected = 14;
+        assertEquals(expected, actual);
+    }
 }
