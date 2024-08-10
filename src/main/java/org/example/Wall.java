@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,29 @@ public class Wall implements Structure {
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return List.of();
+        List<Block> result = new ArrayList<>();
+        for (Block block : blocks) {
+            if (block.getMaterial().equalsIgnoreCase(material)) {
+                result.add(block);
+            }
+            if (block instanceof CompositeBlock compositeBlock) {
+                result.addAll(findBlocksByMaterialNested(compositeBlock.getBlocks(), material));
+            }
+        }
+        return result;
+    }
+
+    private List<Block> findBlocksByMaterialNested(List<Block> blocks, String material) {
+        List<Block> result = new ArrayList<>();
+        for (Block block : blocks) {
+            if (block.getMaterial().equalsIgnoreCase(material)) {
+                result.add(block);
+            }
+            if (block instanceof CompositeBlock compositeBlock) {
+                result.addAll(findBlocksByMaterialNested(compositeBlock.getBlocks(), material));
+            }
+        }
+        return result;
     }
 
     @Override
