@@ -1,8 +1,8 @@
 package org.example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Wall implements Structure {
     private List<Block> blocks;
@@ -16,59 +16,27 @@ public class Wall implements Structure {
 
     @Override
     public Optional<Block> findBlockByColor(String color) {
-        return findBlockByColorNested(blocks, color);
-    }
-
-    private Optional<Block> findBlockByColorNested(List<Block> blocks, String color) {
-        for (Block block : blocks) {
-            if (block.getColor().equalsIgnoreCase(color)) {
-                return Optional.of(block);
-            }
-
-            if (block instanceof CompositeBlock compositeBlock) {
-                Optional<Block> foundBlock = findBlockByColorNested(compositeBlock.getBlocks(), color);
-                if (foundBlock.isPresent()) {
-                    return foundBlock;
-                }
-            }
-        }
-        return Optional.empty();
+        return getBlockStream(blocks)
+                .filter(block -> color.equals(block.getColor()))
+                .findFirst();
     }
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return findBlocksByMaterialNested(blocks, material);
-    }
-
-    private List<Block> findBlocksByMaterialNested(List<Block> blocks, String material) {
-        List<Block> result = new ArrayList<>();
-        for (Block block : blocks) {
-            if (block.getMaterial().equalsIgnoreCase(material)) {
-                result.add(block);
-            }
-
-            if (block instanceof CompositeBlock compositeBlock) {
-                result.addAll(findBlocksByMaterialNested(compositeBlock.getBlocks(), material));
-            }
-
-        }
-        return result;
+        return getBlockStream(blocks)
+                .filter(b -> b.getMaterial().equalsIgnoreCase(material))
+                .toList();
     }
 
     @Override
     public int count() {
-        return countBlocksNested(blocks);
+        return (int) getBlockStream(blocks).count();
     }
 
-    private int countBlocksNested(List<Block> blocks) {
-        var count = 0;
-        for (Block block : blocks) {
-            if (block instanceof CompositeBlock compositeBlock) {
-                count += countBlocksNested(compositeBlock.getBlocks());
-            }
-
-            count++;
-        }
-        return count;
+    private Stream<Block> getBlockStream(List<Block> blocks) {
+        return blocks.stream()
+                .flatMap(b -> b instanceof CompositeBlock compositeBlock ?
+                        Stream.concat(Stream.of(b), getBlockStream(compositeBlock.getBlocks())) :
+                        Stream.of(b));
     }
 }
