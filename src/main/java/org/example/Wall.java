@@ -16,40 +16,27 @@ public class Wall implements Structure {
 
     @Override
     public Optional<Block> findBlockByColor(String color) {
-        return findBlockByColorNested(blocks, color).findFirst();
-    }
-
-    private Stream<Block> findBlockByColorNested(List<Block> blocks, String color) {
-        return blocks.stream()
-                .flatMap(b -> b instanceof CompositeBlock compositeBlock ?
-                        Stream.concat(Stream.of(b), findBlockByColorNested(compositeBlock.getBlocks(), color)) :
-                        Stream.of(b))
-                .filter(block -> color.equals(block.getColor()));
+        return getBlockStream(blocks)
+                .filter(block -> color.equals(block.getColor()))
+                .findFirst();
     }
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return findBlocksByMaterialNested(blocks, material).toList();
-    }
-
-    private Stream<Block> findBlocksByMaterialNested(List<Block> blocks, String material) {
-        return blocks.stream()
-                .flatMap(b -> b instanceof CompositeBlock compositeBlock ?
-                        Stream.concat(Stream.of(b), findBlocksByMaterialNested(compositeBlock.getBlocks(), material)) :
-                        Stream.of(b))
-                .filter(b -> b.getMaterial().equalsIgnoreCase(material));
+        return getBlockStream(blocks)
+                .filter(b -> b.getMaterial().equalsIgnoreCase(material))
+                .toList();
     }
 
     @Override
     public int count() {
-        return (int) countBlocksNested(blocks).count();
+        return (int) getBlockStream(blocks).count();
     }
 
-    private Stream<Block> countBlocksNested(List<Block> blocks) {
+    private Stream<Block> getBlockStream(List<Block> blocks) {
         return blocks.stream()
                 .flatMap(b -> b instanceof CompositeBlock compositeBlock ?
-                        Stream.concat(Stream.of(b), countBlocksNested(compositeBlock.getBlocks())) :
+                        Stream.concat(Stream.of(b), getBlockStream(compositeBlock.getBlocks())) :
                         Stream.of(b));
-
     }
 }
